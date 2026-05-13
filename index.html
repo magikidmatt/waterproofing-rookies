@@ -174,6 +174,7 @@
       position: relative;
       overflow: hidden;
       border-radius: 16px;
+      touch-action: none;
     }
     
     .scrub-layer {
@@ -1014,7 +1015,7 @@
         item.querySelector('.check-icon').innerHTML = '✓';
       } else {
         item.classList.remove('checked');
-        item.querySelector('.check-icon').innerHTML = '✓';
+        item.querySelector('.check-icon').innerHTML = '';
       }
       
       const checkedCount = checkedItems.filter(c => c).length;
@@ -1062,12 +1063,15 @@
       }
       
       const scrubArea = document.getElementById('scrub-area');
-      scrubArea.addEventListener('touchmove', handleScrub, { passive: false });
-      scrubArea.addEventListener('mousedown', handleScrub);
+      scrubArea.addEventListener('pointermove', handleScrub);
+      scrubArea.addEventListener('pointerdown', handleScrub);
     }
     
     function handleScrub(e) {
-      e.preventDefault();
+      // Prevent scrolling on touch devices
+      if (e.pointerType === 'touch' || e.touches) {
+        e.preventDefault();
+      }
       const overlay = document.getElementById('water-overlay');
       const rect = overlay.getBoundingClientRect();
       
@@ -1180,8 +1184,8 @@
       const cards = document.querySelectorAll('.activity-card');
       cards[index].classList.add('completed');
       
-      const stars = document.querySelectorAll('#activities ~ div span[id^="star-"]');
-      stars[index].style.opacity = '1';
+      const star = document.getElementById(`star-${index + 1}`);
+      if (star) star.style.opacity = '1';
       
       const done = completedActivities.filter(a => a).length;
       document.getElementById('activities-done').textContent = done;
