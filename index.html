@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Aqua Engineering: Waterproofing Electronics</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0891B2;    /* Cyan 600 */
+      --primary-dark: #0E7490; /* Cyan 700 */
+      --secondary: #F59E0B;   /* Amber 500 */
+      --accent: #10B981;     /* Emerald 500 */
+      --danger: #EF4444;     /* Red 500 */
+      --water: #38BDF8;      /* Sky 400 */
+      --bg-light: #F0F9FF;    /* Sky 50 */
+    }
+    
+    * {
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: linear-gradient(180deg, var(--bg-light) 0%, #E0F2FE 100%);
+      min-height: 100vh;
+    }
+    
+    h1, h2, .heading {
+      font-family: 'Fredoka One', cursive;
+    }
+    
+    .step-section {
+      scroll-margin-top: 80px;
+    }
+    
+    /* Progress Bar */
+    .progress-bar {
+      background: linear-gradient(90deg, var(--primary) 0%, var(--water) 100%);
+    }
+    
+    /* Step badges */
+    .step-badge {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.5rem;
+      transition: all 0.3s ease;
+    }
+    
+    .step-badge.pending {
+      background: #E5E7EB;
+      color: #6B7280;
+    }
+    
+    .step-badge.active {
+      background: var(--secondary);
+      color: white;
+      animation: pulse-badge 2s infinite;
+    }
+    
+    .step-badge.completed {
+      background: var(--accent);
+      color: white;
+      transform: scale(1.1);
+    }
+    
+    @keyframes pulse-badge {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.5); }
+      50% { box-shadow: 0 0 0 15px rgba(245, 158, 11, 0); }
+    }
+    
+    /* Connector lines */
+    .connector {
+      width: 4px;
+      height: 40px;
+      background: #D1D5DB;
+      margin: 0 auto;
+      transition: background 0.3s ease;
+    }
+    
+    .connector.active {
+      background: var(--accent);
+    }
+    
+    /* Touch targets */
+    .touch-target {
+      min-height: 48px;
+      min-width: 48px;
+    }
+    
+    /* Water droplet animation */
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-15px) rotate(5deg); }
+    }
+    
+    @keyframes float-slow {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-10px) rotate(-5deg); }
+    }
+    
+    .float { animation: float 3s ease-in-out infinite; }
+    .float-slow { animation: float-slow 4s ease-in-out infinite; }
+    .float-delay { animation-delay: 0.5s; }
+    .float-delay-2 { animation-delay: 1s; }
+    .float-delay-3 { animation-delay: 1.5s; }
+    
+    /* Ripple effect */
+    @keyframes ripple {
+      0% { transform: scale(0.8); opacity: 1; }
+      100% { transform: scale(2); opacity: 0; }
+    }
+    
+    .ripple::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 3px solid var(--water);
+      animation: ripple 1.5s infinite;
+    }
+    
+    /* Checklist items */
+    .checklist-item {
+      transition: all 0.3s ease;
+    }
+    
+    .checklist-item.checked {
+      background: #D1FAE5;
+      border-color: var(--accent);
+    }
+    
+    .checklist-item.checked .check-icon {
+      background: var(--accent);
+      color: white;
+    }
+    
+    /* Game area */
+    .game-container {
+      background: linear-gradient(180deg, #DBEAFE 0%, #BFDBFE 100%);
+      border-radius: 24px;
+      border: 4px solid var(--primary);
+    }
+    
+    /* Electronics device */
+    .device {
+      background: linear-gradient(145deg, #374151 0%, #1F2937 100%);
+      border-radius: 20px;
+      border: 4px solid #4B5563;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    }
+    
+    .device-screen {
+      background: linear-gradient(180deg, #10B981 0%, #059669 100%);
+      border-radius: 12px;
+    }
+    
+    /* Water drops */
+    .water-drop {
+      background: radial-gradient(circle at 30% 30%, #7DD3FC, #0EA5E9);
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      position: absolute;
+    }
+    
+    /* Scrub game */
+    .scrub-area {
+      position: relative;
+      overflow: hidden;
+      border-radius: 16px;
+    }
+    
+    .scrub-layer {
+      position: absolute;
+      inset: 0;
+      transition: opacity 0.1s;
+    }
+    
+    /* Activity cards */
+    .activity-card {
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .activity-card:active {
+      transform: scale(0.98);
+    }
+    
+    .activity-card.completed {
+      background: #D1FAE5;
+      border-color: var(--accent);
+    }
+    
+    /* Badge */
+    .badge-card {
+      background: linear-gradient(145deg, #FEF3C7 0%, #FDE68A 100%);
+      border: 4px solid var(--secondary);
+      border-radius: 24px;
+    }
+    
+    @keyframes glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(245, 158, 11, 0.5); }
+      50% { box-shadow: 0 0 40px rgba(245, 158, 11, 0.8); }
+    }
+    
+    .badge-glow {
+      animation: glow 2s ease-in-out infinite;
+    }
+    
+    /* Confetti */
+    .confetti {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      pointer-events: none;
+      z-index: 1000;
+    }
+    
+    /* Floating watermark */
+    @keyframes watermark-float {
+      0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.04; }
+      50% { transform: translateY(-20px) rotate(10deg); opacity: 0.06; }
+    }
+    
+    .watermark {
+      animation: watermark-float 8s ease-in-out infinite;
+    }
+    
+    /* Character animation */
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(-5deg); }
+      50% { transform: rotate(5deg); }
+    }
+    
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+    
+    .character-wiggle {
+      animation: wiggle 0.5s ease-in-out;
+    }
+    
+    .character-bounce {
+      animation: bounce 0.6s ease-in-out;
+    }
+    
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: #E5E7EB;
+      border-radius: 4px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: var(--primary);
+      border-radius: 4px;
+    }
+    
+    /* Blueprint grid */
+    .blueprint-grid {
+      background-image: 
+        linear-gradient(rgba(8, 145, 178, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(8, 145, 178, 0.1) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+  </style>
+</head>
+<body class="pb-24">
+  <!-- Floating Watermarks -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+    <img src="magikidlogo.png" class="watermark fixed top-20 left-10 w-48 h-48" alt="">
+    <img src="magikidlogo.png" class="watermark fixed bottom-40 right-10 w-64 h-64 float-delay" alt="">
+  </div>
+
+  <!-- Progress Bar -->
+  <nav class="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm shadow-lg z-50">
+    <div class="max-w-4xl mx-auto px-4 py-3">
+      <div class="flex items-center gap-4">
+        <img src="magikidlogo.png" class="w-10 h-10" alt="Magikid">
+        <div class="flex-1">
+          <div class="flex justify-between items-center mb-1">
+            <span class="text-sm font-bold text-cyan-700">Mission Progress</span>
+            <span id="progress-text" class="text-sm font-bold text-cyan-700">0/6 Steps</span>
+          </div>
+          <div class="h-3 bg-gray-200 rounded-full overflow-hidden">
+            <div id="progress-bar" class="progress-bar h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="pt-24 px-4 max-w-4xl mx-auto">
+    
+    <!-- Hero Header -->
+    <section class="text-center mb-8">
+      <div class="relative inline-block">
+        <img src="magikidlogo.png" class="w-32 h-32 mx-auto mb-4 float" alt="Magikid">
+        <div class="absolute -top-2 -right-2 text-4xl float-slow">💧</div>
+        <div class="absolute -bottom-2 -left-2 text-3xl float float-delay">⚡</div>
+      </div>
+      <h1 class="heading text-4xl md:text-5xl text-cyan-600 mb-2">Aqua Engineering</h1>
+      <p class="text-xl text-cyan-800 font-bold">Waterproofing Electronics 💦</p>
+      <p class="text-gray-600 mt-2">Help protect devices from water damage!</p>
+    </section>
+
+    <!-- Discussion Starter -->
+    <div class="bg-amber-50 border-2 border-amber-300 rounded-2xl p-4 mb-8">
+      <p class="text-amber-800 font-semibold text-center">
+        💬 Talk with a friend: Have you ever gotten your tablet or phone wet? What happened?
+      </p>
+    </div>
+
+    <!-- Step 1: The Mystery -->
+    <section id="step-1" class="step-section mb-8">
+      <div class="flex items-start gap-4">
+        <div class="step-badge pending" id="badge-1">1</div>
+        <div class="flex-1 bg-white rounded-3xl shadow-xl overflow-hidden border-4 border-cyan-300">
+          <div class="bg-gradient-to-r from-cyan-500 to-sky-400 p-4">
+            <h2 class="heading text-2xl text-white flex items-center gap-2">
+              🚨 The Mystery
+            </h2>
+          </div>
+          <div class="p-6">
+            <!-- Hook Animation -->
+            <div class="relative bg-gradient-to-b from-sky-100 to-cyan-100 rounded-2xl p-6 mb-6 overflow-hidden">
+              <div class="absolute inset-0 flex items-center justify-center">
+                <div class="device w-40 h-56 relative">
+                  <div class="device-screen w-32 h-48 mx-auto mt-2 flex items-center justify-center">
+                    <span class="text-4xl">📱</span>
+                  </div>
+                  <!-- Water drops -->
+                  <div class="water-drop w-6 h-8 absolute -top-2 -right-4 float"></div>
+                  <div class="water-drop w-5 h-7 absolute -top-4 left-8 float-slow float-delay"></div>
+                  <div class="water-drop w-4 h-6 absolute top-12 -right-6 float float-delay-2"></div>
+                  <!-- Splash animation -->
+                  <div class="absolute -bottom-8 left-1/2 -translate-x-1/2 text-4xl">💦</div>
+                </div>
+              </div>
+              <div class="absolute bottom-2 left-2 text-xs bg-red-500 text-white px-2 py-1 rounded-full animate-pulse">
+                DANGER!
+              </div>
+            </div>
+            
+            <div class="bg-red-50 border-2 border-red-300 rounded-xl p-4 mb-4">
+              <p class="text-red-800 font-semibold text-center">
+                😱 Oh no! Someone dropped a tablet in a puddle! The screen is flickering...
+              </p>
+            </div>
+            
+            <h3 class="heading text-xl text-cyan-700 mb-3">Your Mission:</h3>
+            <p class="text-gray-700 mb-4">
+              Learn how to <strong>protect electronics from water</strong> so they stay safe and working! 💪
+            </p>
+            
+            <!-- Movement Activity -->
+            <div class="bg-green-50 border-2 border-green-300 rounded-xl p-4 mb-4">
+              <p class="text-green-800 font-bold mb-2">🎮 Get Moving!</p>
+              <p class="text-green-700">Tap the button below to make it rain!</p>
+              <button id="rain-btn" onclick="triggerRain()" class="touch-target mt-3 w-full bg-gradient-to-r from-sky-400 to-cyan-500 text-white font-bold py-4 px-6 rounded-2xl text-xl shadow-lg active:scale-95 transition-transform">
+                🌧️ Make It Rain!
+              </button>
+              <div id="rain-container" class="h-20 relative overflow-hidden mt-2 rounded-xl bg-sky-200"></div>
+            </div>
+            
+            <button onclick="completeStep(1)" id="btn-1" class="touch-target w-full bg-gradient-to-r from-green-400 to-emerald-500 text-white font-bold py-4 px-8 rounded-2xl text-xl shadow-lg hover:shadow-xl transition-all active:scale-95">
+              I Did It! 🎉
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="connector" id="connector-1"></div>
+    </section>
+
+    <!-- Step 2: Meet the Subject -->
+    <section id="step-2" class="step-section mb-8">
+      <div class="flex items-start gap-4">
+        <div class="step-badge pending" id="badge-2">2</div>
+        <div class="flex-1 bg-white rounded-3xl shadow-xl overflow-hidden border-4 border-cyan-300">
+          <div class="bg-gradient-to-r from-cyan-500 to-sky-400 p-4">
+            <h2 class="heading text-2xl text-white flex items-center gap-2">
+              👁️ Meet Water-Repellent Hero!
+            </h2>
+          </div>
+          <div class="p-6">
+            <!-- Interactive Character -->
+            <div class="relative bg-gradient-to-b from-sky-100 to-blue-100 rounded-2xl p-6 mb-6 text-center">
+              <svg id="character" viewBox="0 0 200 200" class="w-48 h-48 mx-auto cursor-pointer" onclick="animateCharacter()">
+                <!-- Water droplet body -->
+                <defs>
+                  <radialGradient id="dropGrad" cx="30%" cy="30%">
+                    <stop offset="0%" style="stop-color:#7DD3FC"/>
+                    <stop offset="100%" style="stop-color:#0284C7"/>
+                  </radialGradient>
+                </defs>
+                <!-- Body -->
+                <ellipse cx="100" cy="130" rx="60" ry="50" fill="url(#dropGrad)"/>
+                <!-- Top point -->
+                <path d="M100 60 Q60 100 100 130 Q140 100 100 60" fill="url(#dropGrad)"/>
+                <!-- Face -->
+                <ellipse cx="80" cy="120" rx="8" ry="10" fill="#1F2937"/>
+                <ellipse cx="120" cy="120" rx="8" ry="10" fill="#1F2937"/>
+                <ellipse cx="82" cy="118" rx="3" ry="4" fill="white"/>
+                <ellipse cx="122" cy="118" rx="3" ry="4" fill="white"/>
+                <!-- Smile -->
+                <path d="M80 145 Q100 160 120 145" stroke="#1F2937" stroke-width="4" fill="none" stroke-linecap="round"/>
+                <!-- Cheeks -->
+                <ellipse cx="65" cy="135" rx="10" ry="6" fill="#FCA5A5" opacity="0.6"/>
+                <ellipse cx="135" cy="135" rx="10" ry="6" fill="#FCA5A5" opacity="0.6"/>
+                <!-- Crown -->
+                <path d="M60 80 L75 50 L90 75 L100 40 L110 75 L125 50 L140 80 Z" fill="#FBBF24"/>
+                <circle cx="100" cy="50" r="8" fill="#EF4444"/>
+              </svg>
+              <p class="text-cyan-800 font-bold mt-2">Tap me! I have a secret power! 👑</p>
+            </div>
+            
+            <!-- Video Section -->
+            <div class="mb-6">
+              <h3 class="heading text-xl text-cyan-700 mb-3">📺 What is Waterproof?</h3>
+              <a href="https://www.youtube.com/watch?v=i1xCiz6B-Jw" target="_blank" rel="noopener noreferrer" class="block relative rounded-2xl overflow-hidden border-4 border-cyan-300 cursor-pointer hover:opacity-90 transition-opacity">
+                <img 
+                  src="https://img.youtube.com/vi/i1xCiz6B-Jw/maxresdefault.jpg" 
+                  alt="What is Waterproof? video thumbnail"
+                  class="w-full aspect-video object-cover"
+                  onerror="this.src='https://img.youtube.com/vi/i1xCiz6B-Jw/hqdefault.jpg'">
+                <!-- Play button overlay -->
+                <div class="absolute inset-0 bg-black/30 flex items-center justify-center">
+                  <div class="w-20 h-20 bg-red-600 hover:bg-red-700 rounded-full flex items-center justify-center shadow-xl transition-colors">
+                    <svg class="w-10 h-10 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z"/>
+                    </svg>
+                  </div>
+                </div>
+                <!-- YouTube label -->
+                <div class="absolute bottom-3 right-3 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded flex items-center gap-1">
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                  YouTube
+                </div>
+              </a>
+              <p class="text-center text-sm text-gray-500 mt-2">Tap to watch on YouTube 🎬</p>
+            </div>
+            
+            <!-- Fun Facts -->
+            <h3 class="heading text-xl text-cyan-700 mb-4">Fun Facts 💡</h3>
+            <div class="space-y-3">
+              <div class="flex items-center gap-3 bg-sky-50 border-2 border-sky-200 rounded-xl p-4">
+                <span class="text-3xl">💧</span>
+                <p class="text-gray-700">Water beads up and slides off just like magic!</p>
+              </div>
+              <div class="flex items-center gap-3 bg-emerald-50 border-2 border-emerald-200 rounded-xl p-4">
+                <span class="text-3xl">🛡️</span>
+                <p class="text-gray-700">Special coatings keep phones dry in rain!</p>
+              </div>
+              <div class="flex items-center gap-3 bg-amber-50 border-2 border-amber-200 rounded-xl p-4">
+                <span class="text-3xl">🏭</span>
+                <p class="text-gray-700">Scientists invented this coating in labs!</p>
+              </div>
+            </div>
+            
+            <!-- Discussion -->
+            <div class="bg-amber-50 border-2 border-amber-300 rounded-xl p-4 mt-4">
+              <p class="text-amber-800 font-semibold text-center">
+                💬 Talk with a friend: Why do ducks stay dry in water?
+              </p>
+            </div>
+            
+            <button onclick="completeStep(2)" id="btn-2" class="touch-target mt-4 w-full bg-gradient-to-r from-green-400 to-emerald-500 text-white font-bold py-4 px-8 rounded-2xl text-xl shadow-lg hover:shadow-xl transition-all active:scale-95">
+              I Met the Hero! 👀
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="connector" id="connector-2"></div>
+    </section>
+
+    <!-- Step 3: Gear Up -->
+    <section id="step-3" class="step-section mb-8">
+      <div class="flex items-start gap-4">
+        <div class="step-badge pending" id="badge-3">3</div>
+        <div class="flex-1 bg-white rounded-3xl shadow-xl overflow-hidden border-4 border-cyan-300">
+          <div class="bg-gradient-to-r from-cyan-500 to-sky-400 p-4">
+            <h2 class="heading text-2xl text-white flex items-center gap-2">
+              🎒 Gear Up!
+            </h2>
+          </div>
+          <div class="p-6">
+            <p class="text-gray-600 mb-4 text-center">Check off your super tools!</p>
+            
+            <!-- Interactive Checklist -->
+            <div class="space-y-3" id="checklist">
+              <div class="checklist-item flex items-center gap-4 bg-gray-50 border-2 border-gray-300 rounded-xl p-4 cursor-pointer touch-target" onclick="toggleCheck(0)">
+                <div class="check-icon w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-xl transition-all">
+                  ✓
+                </div>
+                <span class="text-lg font-semibold text-gray-700">👟 Waterproof shoes</span>
+              </div>
+              <div class="checklist-item flex items-center gap-4 bg-gray-50 border-2 border-gray-300 rounded-xl p-4 cursor-pointer touch-target" onclick="toggleCheck(1)">
+                <div class="check-icon w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-xl transition-all">
+                  ✓
+                </div>
+                <span class="text-lg font-semibold text-gray-700">🧠 Super curious brain</span>
+              </div>
+              <div class="checklist-item flex items-center gap-4 bg-gray-50 border-2 border-gray-300 rounded-xl p-4 cursor-pointer touch-target" onclick="toggleCheck(2)">
+                <div class="check-icon w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-xl transition-all">
+                  ✓
+                </div>
+                <span class="text-lg font-semibold text-gray-700">🔍 Detective eyes</span>
+              </div>
+              <div class="checklist-item flex items-center gap-4 bg-gray-50 border-2 border-gray-300 rounded-xl p-4 cursor-pointer touch-target" onclick="toggleCheck(3)">
+                <div class="check-icon w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-xl transition-all">
+                  ✓
+                </div>
+                <span class="text-lg font-semibold text-gray-700">🖐️ Steady hands</span>
+              </div>
+            </div>
+            
+            <!-- Status indicator -->
+            <div id="check-status" class="mt-4 text-center text-xl font-bold text-cyan-700">
+              0/4 Ready!
+            </div>
+            
+            <button onclick="completeStep(3)" id="btn-3" class="touch-target mt-4 w-full bg-gradient-to-r from-green-400 to-emerald-500 text-white font-bold py-4 px-8 rounded-2xl text-xl shadow-lg hover:shadow-xl transition-all active:scale-95">
+              I'm Ready! 🎒
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="connector" id="connector-3"></div>
+    </section>
+
+    <!-- Step 4: Execution - The Games -->
+    <section id="step-4" class="step-section mb-8">
+      <div class="flex items-start gap-4">
+        <div class="step-badge pending" id="badge-4">4</div>
+        <div class="flex-1 bg-white rounded-3xl shadow-xl overflow-hidden border-4 border-cyan-300">
+          <div class="bg-gradient-to-r from-cyan-500 to-sky-400 p-4">
+            <h2 class="heading text-2xl text-white flex items-center gap-2">
+              🎮 Water Protection Mission!
+            </h2>
+          </div>
+          <div class="p-6">
+            <p class="text-gray-600 mb-4 text-center">Complete both missions to save the devices!</p>
+            
+            <!-- Game Tabs -->
+            <div class="flex gap-2 mb-4">
+              <button onclick="showGame(1)" id="game-tab-1" class="flex-1 py-3 px-4 rounded-xl font-bold text-white bg-cyan-500 transition-all">
+                Mission 1: Scrub & Seal 🧽
+              </button>
+              <button onclick="showGame(2)" id="game-tab-2" class="flex-1 py-3 px-4 rounded-xl font-bold text-gray-600 bg-gray-200 transition-all">
+                Mission 2: Assemble Parts 🔧
+              </button>
+            </div>
+            
+            <!-- Game 1: The Sifter - Scrub Game -->
+            <div id="game-1" class="game-container p-4">
+              <h3 class="heading text-xl text-cyan-800 mb-3 text-center">Remove the Water! 💦</h3>
+              <p class="text-gray-600 text-center mb-4">Rub to wipe away the water drops!</p>
+              
+              <div class="scrub-area h-48 relative bg-gradient-to-b from-blue-200 to-sky-300 rounded-xl" id="scrub-area">
+                <canvas id="scrub-canvas" class="absolute inset-0 w-full h-full rounded-xl"></canvas>
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <div class="device w-24 h-32">
+                    <div class="device-screen w-20 h-24 mx-auto mt-1"></div>
+                  </div>
+                </div>
+                <!-- Water drops overlay -->
+                <div id="water-overlay" class="absolute inset-0 pointer-events-none">
+                  <!-- Water drops will be generated here -->
+                </div>
+              </div>
+              
+              <div class="flex justify-between items-center mt-4">
+                <div class="text-lg font-bold text-cyan-700">
+                  Drops cleared: <span id="drops-cleared">0</span>/15
+                </div>
+                <div class="w-32 h-3 bg-gray-200 rounded-full overflow-hidden">
+                  <div id="scrub-progress" class="h-full bg-gradient-to-r from-cyan-400 to-emerald-400 transition-all" style="width: 0%"></div>
+                </div>
+              </div>
+              
+              <button onclick="resetScrubGame()" class="touch-target mt-4 w-full bg-amber-400 text-white font-bold py-3 px-6 rounded-xl">
+                🔄 Reset
+              </button>
+            </div>
+            
+            <!-- Game 2: The Switch - Toggle Game -->
+            <div id="game-2" class="game-container p-4 hidden">
+              <h3 class="heading text-xl text-cyan-800 mb-3 text-center">Activate Protection! ⚡</h3>
+              <p class="text-gray-600 text-center mb-4">Tap the switches to power up waterproof shields!</p>
+              
+              <!-- Device with switches -->
+              <div class="relative bg-gradient-to-b from-gray-300 to-gray-400 rounded-2xl p-4 mb-4">
+                <div class="device w-40 h-56 mx-auto">
+                  <div class="device-screen w-32 h-44 mx-auto mt-2 flex flex-col items-center justify-center gap-2">
+                    <span class="text-white font-bold text-sm">Water Protection</span>
+                    <div class="flex flex-col gap-3 mt-2">
+                      <!-- Switch 1 -->
+                      <div class="flex items-center gap-2 bg-black/20 rounded-lg p-2 w-full" onclick="toggleSwitch(0)">
+                        <div id="switch-0" class="switch-box w-12 h-8 rounded-full bg-gray-400 flex items-center px-1 transition-all">
+                          <div class="switch-knob w-6 h-6 rounded-full bg-white shadow"></div>
+                        </div>
+                        <span class="text-white text-xs font-bold">Gasket Seal</span>
+                        <span id="status-0" class="ml-auto text-xs text-gray-300">OFF</span>
+                      </div>
+                      <!-- Switch 2 -->
+                      <div class="flex items-center gap-2 bg-black/20 rounded-lg p-2 w-full" onclick="toggleSwitch(1)">
+                        <div id="switch-1" class="switch-box w-12 h-8 rounded-full bg-gray-400 flex items-center px-1 transition-all">
+                          <div class="switch-knob w-6 h-6 rounded-full bg-white shadow"></div>
+                        </div>
+                        <span class="text-white text-xs font-bold">Side Seals</span>
+                        <span id="status-1" class="ml-auto text-xs text-gray-300">OFF</span>
+                      </div>
+                      <!-- Switch 3 -->
+                      <div class="flex items-center gap-2 bg-black/20 rounded-lg p-2 w-full" onclick="toggleSwitch(2)">
+                        <div id="switch-2" class="switch-box w-12 h-8 rounded-full bg-gray-400 flex items-center px-1 transition-all">
+                          <div class="switch-knob w-6 h-6 rounded-full bg-white shadow"></div>
+                        </div>
+                        <span class="text-white text-xs font-bold">Coating</span>
+                        <span id="status-2" class="ml-auto text-xs text-gray-300">OFF</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Shield indicator -->
+                <div id="shield-indicator" class="absolute top-2 right-2 bg-gray-500 rounded-full w-10 h-10 flex items-center justify-center text-xl transition-all">
+                  🛡️
+                </div>
+              </div>
+              
+              <!-- Instructions -->
+              <div class="text-center">
+                <p class="text-cyan-700 font-bold">Turn on all 3 switches to activate protection!</p>
+                <div class="mt-2">
+                  <span class="text-lg font-bold text-cyan-700">Switches ON: <span id="switches-on">0</span>/3</span>
+                </div>
+              </div>
+            </div>
+            
+            <button onclick="completeStep(4)" id="btn-4" class="touch-target mt-4 w-full bg-gradient-to-r from-green-400 to-emerald-500 text-white font-bold py-4 px-8 rounded-2xl text-xl shadow-lg hover:shadow-xl transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+              Complete Missions! 🎮
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="connector" id="connector-4"></div>
+    </section>
+
+    <!-- Step 5: Activity Games -->
+    <section id="step-5" class="step-section mb-8">
+      <div class="flex items-start gap-4">
+        <div class="step-badge pending" id="badge-5">5</div>
+        <div class="flex-1 bg-white rounded-3xl shadow-xl overflow-hidden border-4 border-cyan-300">
+          <div class="bg-gradient-to-r from-cyan-500 to-sky-400 p-4">
+            <h2 class="heading text-2xl text-white flex items-center gap-2">
+              🏃 Activity Time!
+            </h2>
+          </div>
+          <div class="p-6">
+            <p class="text-center text-gray-600 mb-4">Complete 3 activities to earn stars! ⭐</p>
+            
+            <!-- Activity tracker -->
+            <div class="flex justify-center gap-2 mb-6">
+              <span id="star-1" class="text-4xl opacity-30">⭐</span>
+              <span id="star-2" class="text-4xl opacity-30">⭐</span>
+              <span id="star-3" class="text-4xl opacity-30">⭐</span>
+            </div>
+            
+            <!-- Activity Cards -->
+            <div class="space-y-4" id="activities">
+              <div class="activity-card bg-gradient-to-r from-sky-100 to-cyan-100 border-4 border-sky-300 rounded-2xl p-5" onclick="completeActivity(0)">
+                <div class="flex items-center gap-4">
+                  <span class="text-4xl">🚿</span>
+                  <div>
+                    <h3 class="heading text-xl text-cyan-800">Water Splash Race</h3>
+                    <p class="text-gray-600">Jump over 5 imaginary water puddles!</p>
+                  </div>
+                </div>
+                <div class="mt-3 flex justify-end">
+                  <span class="text-emerald-600 font-bold text-lg">Tap when done!</span>
+                </div>
+              </div>
+              
+              <div class="activity-card bg-gradient-to-r from-emerald-100 to-green-100 border-4 border-emerald-300 rounded-2xl p-5" onclick="completeActivity(1)">
+                <div class="flex items-center gap-4">
+                  <span class="text-4xl">🤲</span>
+                  <div>
+                    <h3 class="heading text-xl text-emerald-800">Dry Hands Challenge</h3>
+                    <p class="text-gray-600">Rub your hands together fast, then show "dry" hands!</p>
+                  </div>
+                </div>
+                <div class="mt-3 flex justify-end">
+                  <span class="text-emerald-600 font-bold text-lg">Tap when done!</span>
+                </div>
+              </div>
+              
+              <div class="activity-card bg-gradient-to-r from-amber-100 to-yellow-100 border-4 border-amber-300 rounded-2xl p-5" onclick="completeActivity(2)">
+                <div class="flex items-center gap-4">
+                  <span class="text-4xl">🧩</span>
+                  <div>
+                    <h3 class="heading text-xl text-amber-800">Seal the Gap!</h3>
+                    <p class="text-gray-600">Find 3 things around you that block water!</p>
+                  </div>
+                </div>
+                <div class="mt-3 flex justify-end">
+                  <span class="text-emerald-600 font-bold text-lg">Tap when done!</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="mt-4 text-center text-xl font-bold text-cyan-700">
+              Activities done: <span id="activities-done">0</span>/3
+            </div>
+            
+            <button onclick="completeStep(5)" id="btn-5" class="touch-target mt-4 w-full bg-gradient-to-r from-green-400 to-emerald-500 text-white font-bold py-4 px-8 rounded-2xl text-xl shadow-lg hover:shadow-xl transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+              Activities Complete! 🏃
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="connector" id="connector-5"></div>
+    </section>
+
+    <!-- Step 6: The Big Idea -->
+    <section id="step-6" class="step-section mb-8">
+      <div class="flex items-start gap-4">
+        <div class="step-badge pending" id="badge-6">6</div>
+        <div class="flex-1 bg-white rounded-3xl shadow-xl overflow-hidden border-4 border-cyan-300">
+          <div class="bg-gradient-to-r from-cyan-500 to-sky-400 p-4">
+            <h2 class="heading text-2xl text-white flex items-center gap-2">
+              🧠 The Big Idea!
+            </h2>
+          </div>
+          <div class="p-6">
+            <h3 class="heading text-2xl text-cyan-700 mb-6 text-center">What You Learned Today! 💡</h3>
+            
+            <!-- Concept Cards -->
+            <div class="space-y-4">
+              <div class="bg-gradient-to-r from-cyan-100 to-sky-100 border-4 border-cyan-300 rounded-2xl p-5">
+                <div class="flex items-center gap-3 mb-2">
+                  <span class="text-3xl">💧</span>
+                  <h4 class="heading text-xl text-cyan-800">Water Proofing</h4>
+                </div>
+                <p class="text-gray-700">Special coatings make water bead up and slide off electronics like magic!</p>
+              </div>
+              
+              <div class="bg-gradient-to-r from-emerald-100 to-green-100 border-4 border-emerald-300 rounded-2xl p-5">
+                <div class="flex items-center gap-3 mb-2">
+                  <span class="text-3xl">🔧</span>
+                  <h4 class="heading text-xl text-emerald-800">Seals & Gaskets</h4>
+                </div>
+                <p class="text-gray-700">Rubber parts called gaskets fill gaps to keep water out of devices!</p>
+              </div>
+              
+              <div class="bg-gradient-to-r from-amber-100 to-yellow-100 border-4 border-amber-300 rounded-2xl p-5">
+                <div class="flex items-center gap-3 mb-2">
+                  <span class="text-3xl">🛡️</span>
+                  <h4 class="heading text-xl text-amber-800">Layers of Protection</h4>
+                </div>
+                <p class="text-gray-700">Engineers use many layers to keep electronics safe from water!</p>
+              </div>
+            </div>
+            
+            <!-- Flowchart for Algorithm -->
+            <div class="mt-6 bg-gray-50 border-2 border-gray-300 rounded-2xl p-4">
+              <h4 class="heading text-lg text-gray-700 mb-3 text-center">How to Protect a Device! 🔄</h4>
+              <div class="flex flex-col items-center gap-2">
+                <div class="bg-cyan-200 border-2 border-cyan-400 rounded-xl px-4 py-2 text-center w-48">
+                  <span class="font-bold">1️⃣ Find gaps</span>
+                </div>
+                <div class="text-2xl">⬇️</div>
+                <div class="bg-sky-200 border-2 border-sky-400 rounded-xl px-4 py-2 text-center w-48">
+                  <span class="font-bold">2️⃣ Add seals</span>
+                </div>
+                <div class="text-2xl">⬇️</div>
+                <div class="bg-emerald-200 border-2 border-emerald-400 rounded-xl px-4 py-2 text-center w-48">
+                  <span class="font-bold">3️⃣ Test with water</span>
+                </div>
+                <div class="text-2xl">⬇️</div>
+                <div class="bg-green-200 border-2 border-green-400 rounded-xl px-4 py-2 text-center w-48">
+                  <span class="font-bold">✅ Device safe!</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Sound Effect Button -->
+            <button onclick="playSound('water')" class="touch-target mt-4 w-full bg-gradient-to-r from-sky-400 to-cyan-500 text-white font-bold py-4 px-8 rounded-2xl text-xl shadow-lg hover:shadow-xl transition-all active:scale-95">
+              🔊 Hear Water Sounds!
+            </button>
+            
+            <button onclick="completeStep(6)" id="btn-6" class="touch-target mt-4 w-full bg-gradient-to-r from-green-400 to-emerald-500 text-white font-bold py-4 px-8 rounded-2xl text-xl shadow-lg hover:shadow-xl transition-all active:scale-95">
+              I Understand! 🧠
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Reward Section -->
+    <section id="reward" class="step-section mb-8 hidden">
+      <div class="bg-gradient-to-b from-yellow-100 to-amber-100 rounded-3xl shadow-2xl overflow-hidden border-4 border-amber-400">
+        <!-- Celebration Header -->
+        <div class="relative bg-gradient-to-r from-amber-400 to-yellow-400 p-8 text-center overflow-hidden">
+          <div class="absolute inset-0 flex items-center justify-center">
+            <div class="text-6xl">🎉</div>
+          </div>
+          <h2 class="heading text-4xl text-white drop-shadow-lg relative z-10">Amazing Work!</h2>
+          <p class="text-white/90 text-xl relative z-10">You completed the mission!</p>
+        </div>
+        
+        <div class="p-6">
+          <!-- Badge Card -->
+          <div class="badge-card p-6 text-center badge-glow">
+            <img src="magikidlogo.png" class="w-16 h-16 mx-auto mb-2" alt="Magikid">
+            <div class="my-4">
+              <svg viewBox="0 0 100 100" class="w-24 h-24 mx-auto">
+                <!-- Badge shield -->
+                <defs>
+                  <linearGradient id="badgeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#38BDF8"/>
+                    <stop offset="100%" style="stop-color:#0891B2"/>
+                  </linearGradient>
+                </defs>
+                <path d="M50 5 L90 25 L90 55 Q90 85 50 95 Q10 85 10 55 L10 25 Z" fill="url(#badgeGrad)" stroke="#0E7490" stroke-width="3"/>
+                <!-- Water drop icon -->
+                <ellipse cx="50" cy="55" rx="20" ry="22" fill="#BFDBFE"/>
+                <path d="M50 35 Q35 50 50 70 Q65 50 50 35" fill="#7DD3FC"/>
+                <!-- Check mark -->
+                <path d="M40 55 L48 63 L62 45" stroke="white" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <h3 class="heading text-2xl text-amber-800">Water Defender Badge</h3>
+            <p class="text-amber-700 mt-1">Official Magikid Aqua Engineering Rookie!</p>
+          </div>
+          
+          <!-- What You Learned -->
+          <div class="mt-6 bg-white rounded-2xl p-4">
+            <h4 class="heading text-xl text-cyan-700 mb-3">What You Learned Today! ✨</h4>
+            <ul class="space-y-2 text-gray-700">
+              <li class="flex items-center gap-2">
+                <span class="text-emerald-500 text-xl">✓</span>
+                Water can damage electronics
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-emerald-500 text-xl">✓</span>
+                Special coatings push water away
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-emerald-500 text-xl">✓</span>
+                Seals and gaskets block water gaps
+              </li>
+              <li class="flex items-center gap-2">
+                <span class="text-emerald-500 text-xl">✓</span>
+                Engineers use layers for protection
+              </li>
+            </ul>
+          </div>
+          
+          <!-- Discussion -->
+          <div class="mt-4 bg-cyan-50 border-2 border-cyan-300 rounded-xl p-4">
+            <p class="text-cyan-800 font-semibold text-center">
+              💬 Tell a friend: What is ONE thing you will do to keep your devices dry?
+            </p>
+          </div>
+          
+          <!-- Exit Button -->
+          <button onclick="exitMission()" class="touch-target mt-6 w-full bg-gradient-to-r from-amber-400 to-yellow-400 text-white font-bold py-4 px-8 rounded-2xl text-xl shadow-lg hover:shadow-xl transition-all active:scale-95">
+            🎊 Celebrate & Finish!
+          </button>
+        </div>
+        
+        <!-- Footer -->
+        <div class="bg-gray-100 p-4 text-center">
+          <img src="magikidlogo.png" class="w-12 h-12 mx-auto mb-2" alt="Magikid">
+          <p class="text-gray-600 text-sm">Magikid AI Robotics Lab</p>
+          <p class="text-gray-500 text-xs">Empowering Young Minds Through Robotics</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // ============ STATE ============
+    let completedSteps = new Set();
+    let currentStep = 1;
+    let game1Complete = false;
+    let game2Complete = false;
+    let dropsCleared = 0;
+    let switchesOn = [false, false, false];
+    let checkedItems = [false, false, false, false];
+    let completedActivities = [false, false, false];
+    
+    // ============ STEP MANAGEMENT ============
+    function completeStep(n) {
+      completedSteps.add(n);
+      updateProgress();
+      
+      // Update badge
+      const badge = document.getElementById(`badge-${n}`);
+      badge.classList.remove('pending', 'active');
+      badge.classList.add('completed');
+      badge.innerHTML = '✓';
+      
+      // Update connector
+      const connector = document.getElementById(`connector-${n}`);
+      if (connector) connector.classList.add('active');
+      
+      // Move to next step
+      currentStep = n + 1;
+      if (currentStep <= 6) {
+        const nextBadge = document.getElementById(`badge-${currentStep}`);
+        nextBadge.classList.remove('pending');
+        nextBadge.classList.add('active');
+        
+        // Scroll to next step
+        setTimeout(() => {
+          document.getElementById(`step-${currentStep}`).scrollIntoView({ behavior: 'smooth' });
+        }, 300);
+      }
+      
+      // Check for reward
+      if (completedSteps.size === 6) {
+        setTimeout(showReward, 500);
+      }
+      
+      // Play sound
+      playSound('complete');
+    }
+    
+    function updateProgress() {
+      const progress = (completedSteps.size / 6) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+      document.getElementById('progress-text').textContent = `${completedSteps.size}/6 Steps`;
+    }
+    
+    function showReward() {
+      document.getElementById('reward').classList.remove('hidden');
+      document.getElementById('reward').scrollIntoView({ behavior: 'smooth' });
+      showConfetti();
+      playSound('reward');
+    }
+    
+    function exitMission() {
+      showConfetti();
+      playSound('reward');
+      setTimeout(() => {
+        alert('🌟 Amazing job, Water Defender! See you next mission!');
+      }, 500);
+    }
+    
+    // ============ CHARACTER ANIMATION ============
+    function animateCharacter() {
+      const character = document.getElementById('character');
+      const animations = ['character-wiggle', 'character-bounce'];
+      const randomAnim = animations[Math.floor(Math.random() * animations.length)];
+      
+      character.classList.add(randomAnim);
+      setTimeout(() => character.classList.remove(randomAnim), 600);
+      
+      playSound('pop');
+    }
+    
+    // ============ RAIN EFFECT ============
+    function triggerRain() {
+      const container = document.getElementById('rain-container');
+      container.innerHTML = '';
+      
+      for (let i = 0; i < 20; i++) {
+        setTimeout(() => {
+          const drop = document.createElement('div');
+          drop.textContent = '💧';
+          drop.className = 'absolute text-2xl';
+          drop.style.left = `${Math.random() * 90}%`;
+          drop.style.top = '-30px';
+          drop.style.animation = `fall 1s linear forwards`;
+          container.appendChild(drop);
+          
+          setTimeout(() => drop.remove(), 1000);
+        }, i * 100);
+      }
+      
+      // Add fall animation
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes fall {
+          to { transform: translateY(100px); opacity: 0; }
+        }
+      `;
+      document.head.appendChild(style);
+      
+      playSound('rain');
+    }
+    
+    // ============ CHECKLIST ============
+    function toggleCheck(index) {
+      checkedItems[index] = !checkedItems[index];
+      
+      const items = document.querySelectorAll('.checklist-item');
+      const item = items[index];
+      
+      if (checkedItems[index]) {
+        item.classList.add('checked');
+        item.querySelector('.check-icon').innerHTML = '✓';
+      } else {
+        item.classList.remove('checked');
+        item.querySelector('.check-icon').innerHTML = '✓';
+      }
+      
+      const checkedCount = checkedItems.filter(c => c).length;
+      document.getElementById('check-status').textContent = `${checkedCount}/4 Ready!`;
+    }
+    
+    // ============ GAMES ============
+    function showGame(n) {
+      const tab1 = document.getElementById('game-tab-1');
+      const tab2 = document.getElementById('game-tab-2');
+      const game1 = document.getElementById('game-1');
+      const game2 = document.getElementById('game-2');
+      
+      if (n === 1) {
+        tab1.classList.remove('bg-gray-200', 'text-gray-600');
+        tab1.classList.add('bg-cyan-500', 'text-white');
+        tab2.classList.remove('bg-cyan-500', 'text-white');
+        tab2.classList.add('bg-gray-200', 'text-gray-600');
+        game1.classList.remove('hidden');
+        game2.classList.add('hidden');
+      } else {
+        tab2.classList.remove('bg-gray-200', 'text-gray-600');
+        tab2.classList.add('bg-cyan-500', 'text-white');
+        tab1.classList.remove('bg-cyan-500', 'text-white');
+        tab1.classList.add('bg-gray-200', 'text-gray-600');
+        game2.classList.remove('hidden');
+        game1.classList.add('hidden');
+      }
+    }
+    
+    // Scrub Game (The Sifter)
+    function initScrubGame() {
+      const overlay = document.getElementById('water-overlay');
+      overlay.innerHTML = '';
+      
+      for (let i = 0; i < 15; i++) {
+        const drop = document.createElement('div');
+        drop.className = 'water-drop absolute';
+        drop.style.width = `${20 + Math.random() * 20}px`;
+        drop.style.height = `${25 + Math.random() * 25}px`;
+        drop.style.left = `${10 + Math.random() * 70}%`;
+        drop.style.top = `${10 + Math.random() * 70}%`;
+        drop.dataset.index = i;
+        overlay.appendChild(drop);
+      }
+      
+      const scrubArea = document.getElementById('scrub-area');
+      scrubArea.addEventListener('touchmove', handleScrub, { passive: false });
+      scrubArea.addEventListener('mousedown', handleScrub);
+    }
+    
+    function handleScrub(e) {
+      e.preventDefault();
+      const overlay = document.getElementById('water-overlay');
+      const rect = overlay.getBoundingClientRect();
+      
+      let x, y;
+      if (e.touches) {
+        x = e.touches[0].clientX;
+        y = e.touches[0].clientY;
+      } else {
+        x = e.clientX;
+        y = e.clientY;
+      }
+      
+      const drops = overlay.querySelectorAll('.water-drop:not(.cleared)');
+      drops.forEach(drop => {
+        const dropRect = drop.getBoundingClientRect();
+        const dropX = dropRect.left + dropRect.width / 2;
+        const dropY = dropRect.top + dropRect.height / 2;
+        
+        const distance = Math.sqrt((x - dropX) ** 2 + (y - dropY) ** 2);
+        
+        if (distance < 40) {
+          drop.classList.add('cleared');
+          drop.style.transition = 'opacity 0.3s, transform 0.3s';
+          drop.style.opacity = '0';
+          drop.style.transform = 'scale(0)';
+          dropsCleared++;
+          document.getElementById('drops-cleared').textContent = dropsCleared;
+          document.getElementById('scrub-progress').style.width = `${(dropsCleared / 15) * 100}%`;
+          
+          if (dropsCleared >= 15) {
+            game1Complete = true;
+            checkGameComplete();
+          }
+        }
+      });
+    }
+    
+    function resetScrubGame() {
+      dropsCleared = 0;
+      game1Complete = false;
+      document.getElementById('drops-cleared').textContent = '0';
+      document.getElementById('scrub-progress').style.width = '0%';
+      initScrubGame();
+    }
+    
+    // ============ SWITCH GAME (The Switch) ============
+    function toggleSwitch(index) {
+      switchesOn[index] = !switchesOn[index];
+      
+      const switchBox = document.getElementById(`switch-${index}`);
+      const statusText = document.getElementById(`status-${index}`);
+      
+      if (switchesOn[index]) {
+        // Turn ON
+        switchBox.classList.remove('bg-gray-400');
+        switchBox.classList.add('bg-emerald-500');
+        switchBox.querySelector('.switch-knob').style.transform = 'translateX(16px)';
+        statusText.textContent = 'ON';
+        statusText.classList.remove('text-gray-300');
+        statusText.classList.add('text-emerald-300');
+      } else {
+        // Turn OFF
+        switchBox.classList.remove('bg-emerald-500');
+        switchBox.classList.add('bg-gray-400');
+        switchBox.querySelector('.switch-knob').style.transform = 'translateX(0)';
+        statusText.textContent = 'OFF';
+        statusText.classList.remove('text-emerald-300');
+        statusText.classList.add('text-gray-300');
+      }
+      
+      // Update counter
+      const onCount = switchesOn.filter(s => s).length;
+      document.getElementById('switches-on').textContent = onCount;
+      
+      // Check if all switches are on
+      if (onCount === 3) {
+        game2Complete = true;
+        checkGameComplete();
+        
+        // Update shield indicator
+        const shield = document.getElementById('shield-indicator');
+        shield.classList.remove('bg-gray-500');
+        shield.classList.add('bg-emerald-500', 'animate-pulse');
+        shield.textContent = '✨';
+        
+        playSound('success');
+      } else {
+        // Reset shield
+        const shield = document.getElementById('shield-indicator');
+        shield.classList.add('bg-gray-500');
+        shield.classList.remove('bg-emerald-500', 'animate-pulse');
+        shield.textContent = '🛡️';
+      }
+      
+      playSound('pop');
+    }
+    
+    function checkGameComplete() {
+      if (game1Complete && game2Complete) {
+        document.getElementById('btn-4').disabled = false;
+        playSound('success');
+      }
+    }
+    
+    // ============ ACTIVITIES ============
+    function completeActivity(index) {
+      if (completedActivities[index]) return;
+      
+      completedActivities[index] = true;
+      const cards = document.querySelectorAll('.activity-card');
+      cards[index].classList.add('completed');
+      
+      const stars = document.querySelectorAll('#activities ~ div span[id^="star-"]');
+      stars[index].style.opacity = '1';
+      
+      const done = completedActivities.filter(a => a).length;
+      document.getElementById('activities-done').textContent = done;
+      
+      if (done >= 3) {
+        document.getElementById('btn-5').disabled = false;
+        playSound('success');
+      }
+      
+      playSound('pop');
+    }
+    
+    // ============ AUDIO ============
+    function playSound(type) {
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      switch(type) {
+        case 'complete':
+          oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
+          oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1); // E5
+          oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.2); // G5
+          gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+          oscillator.start(audioContext.currentTime);
+          oscillator.stop(audioContext.currentTime + 0.4);
+          break;
+          
+        case 'success':
+          oscillator.frequency.setValueAtTime(392, audioContext.currentTime); // G4
+          oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime + 0.15); // C5
+          oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.3); // E5
+          gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+          oscillator.start(audioContext.currentTime);
+          oscillator.stop(audioContext.currentTime + 0.5);
+          break;
+          
+        case 'reward':
+          const notes = [523.25, 587.33, 659.25, 698.46, 783.99, 880, 987.77, 1046.5];
+          notes.forEach((freq, i) => {
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(0.2, audioContext.currentTime + i * 0.1);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + i * 0.1 + 0.3);
+            osc.start(audioContext.currentTime + i * 0.1);
+            osc.stop(audioContext.currentTime + i * 0.1 + 0.3);
+          });
+          break;
+          
+        case 'pop':
+          oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+          oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.1);
+          gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+          oscillator.start(audioContext.currentTime);
+          oscillator.stop(audioContext.currentTime + 0.1);
+          break;
+          
+        case 'water':
+          // White noise for water sound
+          const bufferSize = audioContext.sampleRate * 0.5;
+          const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+          const data = buffer.getChannelData(0);
+          for (let i = 0; i < bufferSize; i++) {
+            data[i] = Math.random() * 2 - 1;
+          }
+          const noise = audioContext.createBufferSource();
+          noise.buffer = buffer;
+          const noiseGain = audioContext.createGain();
+          noise.connect(noiseGain);
+          noiseGain.connect(audioContext.destination);
+          noiseGain.gain.setValueAtTime(0.1, audioContext.currentTime);
+          noiseGain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+          noise.start(audioContext.currentTime);
+          break;
+          
+        case 'rain':
+          // Soft white noise for rain
+          const rainBuffer = audioContext.createBuffer(1, audioContext.sampleRate * 0.8, audioContext.sampleRate);
+          const rainData = rainBuffer.getChannelData(0);
+          for (let i = 0; i < rainBuffer.length; i++) {
+            rainData[i] = (Math.random() * 2 - 1) * 0.3;
+          }
+          const rainNoise = audioContext.createBufferSource();
+          rainNoise.buffer = rainBuffer;
+          const rainFilter = audioContext.createBiquadFilter();
+          rainFilter.type = 'lowpass';
+          rainFilter.frequency.value = 2000;
+          const rainGain = audioContext.createGain();
+          rainNoise.connect(rainFilter);
+          rainFilter.connect(rainGain);
+          rainGain.connect(audioContext.destination);
+          rainGain.gain.setValueAtTime(0.15, audioContext.currentTime);
+          rainGain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.8);
+          rainNoise.start(audioContext.currentTime);
+          break;
+      }
+    }
+    
+    // ============ CONFETTI ============
+    function showConfetti() {
+      const colors = ['#EF4444', '#F59E0B', '#10B981', '#3B82F6', '#8B5CF6', '#EC4899'];
+      const container = document.body;
+      
+      for (let i = 0; i < 60; i++) {
+        setTimeout(() => {
+          const confetti = document.createElement('div');
+          confetti.className = 'confetti';
+          confetti.style.left = `${Math.random() * 100}vw`;
+          confetti.style.top = '-10px';
+          confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+          confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+          confetti.style.width = `${5 + Math.random() * 10}px`;
+          confetti.style.height = `${5 + Math.random() * 10}px`;
+          
+          container.appendChild(confetti);
+          
+          const duration = 2000 + Math.random() * 2000;
+          const rotation = Math.random() * 720 - 360;
+          
+          confetti.animate([
+            { transform: 'translateY(0) rotate(0deg)', opacity: 1 },
+            { transform: `translateY(100vh) rotate(${rotation}deg)`, opacity: 0 }
+          ], {
+            duration: duration,
+            easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+          }).onfinish = () => confetti.remove();
+        }, i * 50);
+      }
+    }
+    
+    // ============ SCROLL TRACKING ============
+    function initScrollTracking() {
+      const sections = document.querySelectorAll('.step-section');
+      
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const id = entry.target.id;
+            if (id.startsWith('step-')) {
+              const stepNum = parseInt(id.split('-')[1]);
+              if (!completedSteps.has(stepNum)) {
+                // Update active badge
+                document.querySelectorAll('.step-badge').forEach(b => b.classList.remove('active'));
+                document.getElementById(`badge-${stepNum}`).classList.add('active');
+              }
+            }
+          }
+        });
+      }, { threshold: 0.5 });
+      
+      sections.forEach(section => observer.observe(section));
+    }
+    
+    // ============ INITIALIZATION ============
+    document.addEventListener('DOMContentLoaded', () => {
+      // Set first step as active
+      document.getElementById('badge-1').classList.remove('pending');
+      document.getElementById('badge-1').classList.add('active');
+      
+      // Initialize games
+      initScrubGame();
+      
+      // Initialize scroll tracking
+      initScrollTracking();
+    });
+  </script>
+</body>
+</html>
